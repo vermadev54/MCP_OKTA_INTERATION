@@ -47,18 +47,6 @@ git clone <git_repo_url>
 ```
 - Move _streamlit_okta_ folder to your project directory
 - Import _okta_login_wrapper_ function into your code
-```python
-from streamlit_okta import okta_login_wrapper
-
-okta_config = {
-            provider_url=https://integrator-dhgdgd.okta.com/oauth2/default/.well-known/openid-configuration
-            client_id=""
-            client_serret=""
-            base_url=https://integrator-dhgdgd.okta.com/oauth2/default/v1
-            redirect_uri=http://localhost:7001
-            mcpclient_url=http://localhost:7001
-            mcpserver_url=http://localhost:8080
-}
 
 
 ## running mcp server and client
