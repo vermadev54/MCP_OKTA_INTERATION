@@ -1,4 +1,4 @@
-Copyright 2024 Snowflake Inc. 
+Copyright 2025 jainendra
 SPDX-License-Identifier: Apache-2.0
 
 Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,10 +17,9 @@ limitations under the License.
 This is an okta authentication wrapper library to implement oauth2.0 authentication & authorization in your streamlit application.
 
 ## Pre-requisites
-- Install following python libraries
-  - [streamlit v1.19.0](https://docs.streamlit.io/library/get-started/installation)
-  - [requests ](https://anaconda.org/anaconda/requests)  
-  - [pyjwt v2.4.0](https://anaconda.org/conda-forge/pyjwt)
+- create uv enviroment with : uv venv
+- activate env source .venv/bin/activate
+- install uv pip install -r requirements.txt
 - Install node + npm, to build the _custom component_
 - Build the _custom component_
  ```
@@ -52,90 +51,26 @@ git clone <git_repo_url>
 from streamlit_okta import okta_login_wrapper
 
 okta_config = {
-        "okta_base_url": "",
-        "client_id": "",
-        "client_secret": "",
-        "redirect_uri": "",
+            provider_url=https://integrator-dhgdgd.okta.com/oauth2/default/.well-known/openid-configuration
+            client_id=""
+            client_serret=""
+            base_url=https://integrator-dhgdgd.okta.com/oauth2/default/v1
+            redirect_uri=http://localhost:7001
+            mcpclient_url=http://localhost:7001
+            mcpserver_url=http://localhost:8080
 }
 
-'''
-Parameters: 
-1. okta_config (dict)
-    okta_base_url - okta domain url (ex. - https://snowbiz.oktapreview.com/oauth2/v1)
-    redirect_uri - redirect url mentioned in okta configuration. It is same as streamlit url (in case of local machine - http://localhost:8501)
 
-2. app (callback function) - contains application business logic
-''' 
-okta_login_wrapper(okta_config, app)
-```
+## running mcp server and client
 
-## Example
-Refer  [example.py](<git_repo_url>/blob/main/example.py) 
+1. run mcpserver: fastmcp run mcpserver.py:mcp --transport http --port 8080 --host 0.0.0.0
+2. rub mcp client: streamlit run mcpclient.py --server.port 7001
 
-## How to Contribute
 
-We welcome all types of contributions to the project, whether it's fixing bugs, adding features, or improving documentation.
-Bug Reports
 
-If you've encountered a bug, please follow these steps to report it:
 
-    Check if the bug has already been reported: Search through the existing issues in the project to see if the problem has already been reported.
-    Create a new issue: If the bug hasn't been reported yet, please create a new issue with the following details:
-        Steps to reproduce the bug
-        Expected behavior
-        Actual behavior
-        Any relevant logs or screenshots
 
-Feature Requests
 
-We are open to feature requests. If you have an idea that would improve the project, feel free to submit a feature request by following these steps:
-
-    Check if the feature has already been requested: Search through the existing issues to see if someone else has requested the feature.
-    Create a new issue: If the feature hasn't been requested, please create a new issue with:
-        A clear description of the feature
-        How it would improve the project
-        Any specific use cases
-
-Pull Requests
-
-To contribute code, follow the steps below to submit a pull request:
-
-    Fork the repository: Go to the project's GitHub page and click the "Fork" button.
-
-    Clone your fork:
-
-git clone https://github.com/Snowflake-Labs/streamlit-okta-oauth2.git
-streamlit-okta-oauth2
-
-Create a new branch for your work:
-
-git checkout -b your-branch-name
-
-Make your changes. Ensure that your code follows the project's coding standards and includes relevant tests, if applicable.
-
-Commit your changes:
-
-git add .
-git commit -m "Description of changes"
-
-Push your changes to your fork:
-
-    git push origin your-branch-name
-
-    Open a pull request: Go to the main repository on GitHub, and you should see a "Compare & pull request" button. Provide a clear description of your changes and submit the pull request.
-
-Code of Conduct
-
-We follow a Code of Conduct to ensure that contributors interact in a respectful and collaborative manner. By contributing to this project, you agree to follow the guidelines set in the Code of Conduct.
-License
-
-This project is licensed under the MIT License - see the LICENSE.md file for details.
-Contact
-
-If you have any questions or need further assistance, feel free to open an issue or contact the project maintainers:
-    Maintainer 1: sfc-gh-atpawar
-    Maintainer 2: sfc-gh-hmishra-27
-    Maintainer 3: sfc-gh-stopchiy
 
 
 

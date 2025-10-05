@@ -20,11 +20,38 @@ from streamlit_okta.components import onunload_component, oauth_component
 from streamlit_okta.auth.okta import Okta
 import time
 import logging
+import requests
+import asyncio
 
 
-def app(okta, tokens, callback):
-    # clean out the query parameters
-    st.experimental_set_query_params(**{})
+def validate_access_token(okta, access_token):
+    """
+    Validates the access token using Okta's introspect endpoint.
+    """
+    OKTA_INTROSPECT_ENDPOINT = f"{okta.okta_base_url}/introspect"
+
+    data = {
+        "token": access_token,
+        "token_type_hint": "access_token",
+    }
+
+    response = requests.post(url=OKTA_INTROSPECT_ENDPOINT, data=data, headers=okta.headers)
+
+    if response.status_code == 200:
+        response_data = response.json()
+        if response_data.get("active"):
+            return True
+        else:
+            st.warning("Access token is invalid or expired.")
+            return False
+    else:
+        st.error("Failed to validate access token.")
+        return False
+
+
+async def app(okta, tokens, callback):
+    # Removed the incorrect usage of `st.query_params(**{})`.
+    # Streamlit does not currently support clearing query parameters directly with `st.query_params`.
     oauth_component(event='REMOVE_STATE')
 
     decoded_token = okta.get_user_context()
@@ -40,12 +67,22 @@ def app(okta, tokens, callback):
         okta.verify_tokens_from_okta(
             access_token=tokens['access_token'], refresh_token=tokens['refresh_token'])
 
+    # Use the existing `verify_tokens_from_okta` method from `okta.py` to validate the access token.
+    #st.info(okta.verify_tokens_from_okta(access_token=tokens['access_token'], refresh_token=tokens['refresh_token']))
+
+    
+    
+
     # Browser / Tab Close Event
     st.button("revoke", on_click=okta.invalidate_token_from_okta,
               kwargs=st.session_state['token'])
     oauth_component(event='HIDE_REVOKE_BUTTON')
 
-    callback()
+    # Check if the callback is asynchronous and await it if necessary.
+    if asyncio.iscoroutinefunction(callback):
+        await callback()
+    else:
+        callback()
 
     # Hide empty blocks
     hide_empty_blocks_html = '''<script>
@@ -67,31 +104,35 @@ def app(okta, tokens, callback):
     html(hide_empty_blocks_html, height=0)
 
 
-def okta_login_wrapper(config, callback):
+async def okta_login_wrapper(config, callback):
     okta = Okta(config)
 
     onunload_component()
     if 'token' not in st.session_state:
         local_storage = oauth_component(event='GET_LOCAL_STORAGE')
         if local_storage:
-            if 'error' in st.experimental_get_query_params():
-                st.warning(st.experimental_get_query_params()
-                           ['error_description'][0])
+            if 'error' in st.query_params:
+                st.warning(st.query_params['error_description'][0])
                 st.stop()
 
-            if "code" in st.experimental_get_query_params() and "state" in st.experimental_get_query_params():
+            if "code" in st.query_params and "state" in st.query_params:
                 st.info('Please Wait...')
-                authorization_code = st.experimental_get_query_params()[
-                    "code"][0]
+                authorization_code = st.query_params["code"]
 
-                authorization_state = st.experimental_get_query_params()[
-                    "state"][0]
+                authorization_state = st.query_params["state"]
+
 
                 if 'state' in local_storage and authorization_state == local_storage['state']:
                     tokens = okta.get_tokens_from_okta(authorization_code)
 
+                    print('Login Successful!', tokens)
+
+
                     st.session_state['token'] = tokens
-                    st.experimental_rerun()
+
+                
+
+                    st.rerun()
                 else:
                     st.warning(
                         "Something wrong. Please try to login again..")
@@ -103,4 +144,4 @@ def okta_login_wrapper(config, callback):
                 st.stop()
     else:
         logging.debug('User logged in successfully!')
-        app(okta, st.session_state['token'], callback)
+        await app(okta, st.session_state['token'], callback)

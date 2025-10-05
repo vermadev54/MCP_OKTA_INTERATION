@@ -1,0 +1,13 @@
+fastmcp>=2.0
+sentence-transformers
+transformers
+torch
+uvicorn
+httpx
+boto3
+python-dotenv
+loguru
+pandas
+requests
+streamlit
+pyjwt

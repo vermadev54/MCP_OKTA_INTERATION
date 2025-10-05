@@ -51,6 +51,8 @@ class Okta:
             '''
 
         st.info('Redirecting to Okta...')
+        
+        st.info('If you are not redirected automatically, please click the link below:')
 
         st.markdown(f'''
             <head>
@@ -78,7 +80,8 @@ class Okta:
             st.stop()
         else:
             logging.debug("/token call success")
-            st.experimental_set_query_params(**{})
+            # Removed the deprecated `st.experimental_set_query_params` and replaced it with a comment to indicate clearing query parameters.
+            # Streamlit does not currently support clearing query parameters directly with `st.query_params`.
             tokens = response.json()
 
             return tokens
@@ -144,22 +147,25 @@ class Okta:
             logging.debug(
                 "/introspect call success for access and refresh token")
 
+            # Ensure `access_token_introspect_response_data` is properly assigned before using it.
             access_token_introspect_response_data = access_token_introspect_response.json()
+            self.access_token_introspect_response_data = access_token_introspect_response_data
+
+            print(access_token_introspect_response_data)
+
             if access_token_introspect_response_data["active"] == False:
                 logging.debug("active token expired")
 
                 refresh_token_introspect_response_data = refresh_token_introspect_response.json()
                 if refresh_token_introspect_response_data["active"] == True:
-                    self.refresh_tokens_from_okta(
-                        refresh_token=tokens["refresh_token"])
+                    self.refresh_tokens_from_okta(refresh_token=tokens["refresh_token"])
                 elif refresh_token_introspect_response_data["active"] == False:
                     logging.debug("refresh token expired")
 
                     if 'token' in st.session_state:
                         del st.session_state['token']
 
-                    logging.debug(
-                        f"Deleted tokens from Session State and redirecting to {self.redirect_uri}")
+                    logging.debug(f"Deleted tokens from Session State and redirecting to {self.redirect_uri}")
 
                     st.markdown(f'''
                     <head>

@@ -60,9 +60,13 @@ function onRender(event) {
     let app_event = data.args["event"];
     let params = data.args["params"];
 
-    if (!isClicked) {
-        event_factory[app_event](params);
-        isClicked = true;
+    if (event_factory[app_event]) {
+        if (!isClicked) {
+            event_factory[app_event](params);
+            isClicked = true;
+        }
+    } else {
+        console.warn(`Unrecognized event: ${app_event}`);
     }
 
     Streamlit.setFrameHeight();
