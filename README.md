@@ -64,14 +64,5 @@ okta_config = {
 ## running mcp server and client
 
 1. run mcpserver: fastmcp run mcpserver.py:mcp --transport http --port 8080 --host 0.0.0.0
-2. rub mcp client: streamlit run mcpclient.py --server.port 7001
-
-
-
-
-
-
-
-
-
+2. run mcp client: streamlit run mcpclient.py --server.port 7001
 
